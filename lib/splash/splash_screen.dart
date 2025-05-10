@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:xpenso/domain/app_constants.dart';
 import 'package:xpenso/log_in/sign_in_page.dart';
+import 'package:xpenso/screen/home_page.dart';
 import 'package:xpenso/screen/intro_page.dart';
 
 class splashPage extends StatefulWidget{
@@ -20,15 +22,13 @@ class _splashPageState extends State<splashPage> {
     Timer(Duration(seconds: 2),()async{
 
       var prefs = await SharedPreferences.getInstance();
-      bool? check = prefs.getBool(signInPage.LOGIN_KEY);
+      int check = prefs.getInt(AppConstants.USER_ID)??0;
 
-      Widget nextPage = signInPage();
+      Widget nextPage = introPage();
 
-      if(check!=null){
-        if(check){
-          nextPage = introPage();
-        }
-      }
+     if(check != 0 ){
+       nextPage = homePage();
+     }
 
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>nextPage));
     });

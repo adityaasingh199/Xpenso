@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:xpenso/screen/bottom_nav_pages/app_expense.dart';
 import 'package:xpenso/screen/bottom_nav_pages/graph_nav_page.dart';
 import 'package:xpenso/screen/bottom_nav_pages/home_nav_page.dart';
 import 'package:xpenso/screen/bottom_nav_pages/notification_nav_page.dart';
@@ -27,6 +28,8 @@ class _homePageState extends State<homePage> {
     profileBottomPage()
   ];
 
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,14 +54,19 @@ class _homePageState extends State<homePage> {
               icon: Icon(Icons.bar_chart_outlined,size: 30,color: _selectedIndex==1 ?Color(0xffE78BBC) : Colors.grey,),
               onPressed: () => onItemTapped(1),
             ),
-            Container(
-              height: 50,
-              width: 50,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Color(0xffE78BBC)
+            GestureDetector(
+              onTap: (){
+                Navigator.push(context,MaterialPageRoute(builder: (context)=>addExpense()));
+              },
+              child: Container(
+                height: 50,
+                width: 50,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Color(0xffE78BBC)
+                ),
+                child: Icon(Icons.add,color: Colors.white,size: 27,),
               ),
-              child: Icon(Icons.add,color: Colors.white,size: 27,),
             ), // Space for the FAB
             IconButton(
               icon: Icon(Icons.notifications_none_outlined,size: 30,color: _selectedIndex==2 ?Color(0xffE78BBC) : Colors.grey,),

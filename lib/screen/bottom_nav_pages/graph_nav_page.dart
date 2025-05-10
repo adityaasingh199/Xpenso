@@ -1,11 +1,34 @@
+import 'dart:ffi';
+
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:xpenso/data/model/filter_expense_model.dart';
+import 'package:xpenso/espense/expense_bloc.dart';
+import 'package:xpenso/espense/expense_event.dart';
+import 'package:xpenso/espense/expense_state.dart';
 
-class graphBottomPage extends StatelessWidget{
+class graphBottomPage extends StatefulWidget{
+
+  @override
+  State<graphBottomPage> createState() => _graphBottomPageState();
+}
+
+class _graphBottomPageState extends State<graphBottomPage> {
+
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<expenseBloc>().add(getInitialExpEvent(type:1));
+  }
+
   @override
   Widget build(BuildContext context) {
+    int xCount = 0;
     return Scaffold(
-      backgroundColor: Colors.white,
+      //backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -17,9 +40,9 @@ class graphBottomPage extends StatelessWidget{
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    
+
                     Text(" Statistic",style: TextStyle(fontFamily:"Poppins",fontWeight: FontWeight.bold,fontSize: 23,color: Colors.black),),
-                    
+
                     Container(
                       width: 105,
                       height: 30,
@@ -87,14 +110,14 @@ class graphBottomPage extends StatelessWidget{
                               color: Color(0xffEAC794),
                               borderRadius: BorderRadius.circular(5),
                             ),
-                    
+
                           )
                       ),
                     ],
                   ),
                 ),
                 SizedBox(height: 20,),
-                    
+
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -104,7 +127,7 @@ class graphBottomPage extends StatelessWidget{
                         Text(" Expense Breakdown",style: TextStyle(fontFamily:"Poppins",fontWeight: FontWeight.bold,fontSize: 18,color: Colors.black),),
                         Text(" Limit \$900 / week",style: TextStyle(fontFamily:"Poppins",fontWeight: FontWeight.w500,fontSize: 14,color: Color(
                             0xcb000000)),),
-                    
+
                       ],
                     ),
                     Container(
@@ -125,10 +148,51 @@ class graphBottomPage extends StatelessWidget{
                   ],
                 ),
                 SizedBox(height: 15,),
-                    
-                SizedBox(
-                  height: 200,
-                  child: Stack(
+
+                BlocBuilder<expenseBloc,expenseState>(
+                    builder: (context,state){
+                  if(state is expenseLoadingState){
+                    return Center(child: CircularProgressIndicator(),);
+                  }
+                  if(state is expenseErrorState){
+                    return Center(child: Text(state.errorMsg),);
+                  }
+                  if(state is expenseLoadedState){
+                    List<filterExpenseModel> mData = state.allExpenses;
+                    return SizedBox(
+                        height: 250,
+                        child: BarChart(
+                            BarChartData(
+                                borderData: FlBorderData(show: false),
+                                titlesData: FlTitlesData(
+                                    rightTitles: AxisTitles(),
+                                    bottomTitles: AxisTitles(
+                                        sideTitles: SideTitles(
+                                            /*getTitlesWidget: (value, meta) {
+                                            final match = mData.firstWhere((element)=> element.mExpenses == value);
+                                              return Text(match.type);
+                                            },*/
+                                            showTitles: true
+                                        )
+                                    ),
+                                    topTitles: AxisTitles()
+                                ),
+                                gridData:FlGridData(
+                                  show: false,
+                                ),
+                                barGroups: mData.map((element){
+                                  xCount++;
+                                  return BarChartGroupData(x:xCount,
+                                      barRods: [
+                                    BarChartRodData(toY: element.totalAmt.toDouble()<0 ? element.totalAmt.toDouble()*-1:element.totalAmt.toDouble(),
+                                      color: Colors.blue,width: 21,
+                                      //borderRadius: BorderRadius.vertical(top: Radius.circular(5)),
+                                      )
+                                  ]);
+                                }).toList()
+                            )
+                        )
+                      /*Stack(
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -137,7 +201,7 @@ class graphBottomPage extends StatelessWidget{
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Container(
-                    
+
                                 padding: EdgeInsets.symmetric(vertical: 2,horizontal: 4),
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(10),
@@ -150,7 +214,7 @@ class graphBottomPage extends StatelessWidget{
                               Text("\$300",style: TextStyle(fontFamily:"Poppins",fontWeight: FontWeight.bold,fontSize: 11,color: Color(0xcb000000))),
                               Text("\$0",style: TextStyle(fontFamily:"Poppins",fontWeight: FontWeight.bold,fontSize: 11,color: Color(0xcb000000))),
                               SizedBox(height: 1,)
-                    
+
                             ],
                           ),
                           Column(
@@ -259,18 +323,23 @@ class graphBottomPage extends StatelessWidget{
                             color: Color(0xffDB6564)
                         ),
                       ),
-            
+
                     ],
-                  ),
-                ),
+                  ),*/
+                    );
+                  }
+                  return Container();
+                }),
+
+
                 SizedBox(height: 15,),
                 Text("Spending Details",style: TextStyle(fontFamily:"Poppins",fontWeight: FontWeight.bold,fontSize: 20,color: Colors.black),),
                 //SizedBox(height: 5,),
                 Text("Your expenses are divided into 6 catgories",style: TextStyle(fontFamily:"Poppins",fontWeight: FontWeight.bold,fontSize: 12,color: Color(
                     0xB6000000)),),
                 SizedBox(height: 15,),
-            
-            
+
+
                 Row(
                   children: [
                     Expanded(
@@ -372,7 +441,7 @@ class graphBottomPage extends StatelessWidget{
                   ],
                 ),
                 SizedBox(height: 15,),
-                    
+
                 Row(
                   children: [
                     Expanded(

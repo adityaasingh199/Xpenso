@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:xpenso/log_in/sign_in_page.dart';
 import 'package:xpenso/screen/home_page.dart';
 
 class introPage extends StatelessWidget{
@@ -91,7 +92,7 @@ class introPage extends StatelessWidget{
                   ),
                   child: GestureDetector(
                     onTap: (){
-                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>homePage()));
+                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>signInPage()));
                     },
                     child: Container(
                       height: 50,
